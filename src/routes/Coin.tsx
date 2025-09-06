@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useMatch } from "react-router-dom";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { priceFetcher } from "../ts/api";
+import { priceFetcher, coinInfoFetcher } from "../ts/api";
 import { Helmet } from "react-helmet";
 
 interface IPrices {
@@ -20,6 +20,16 @@ interface IPrices {
 
 interface RouterState {
   name: string;
+}
+
+interface ICoinInfo {
+  id: string;
+  name: string;
+  symbol: string;
+  rank: number;
+  is_new: boolean;
+  is_active: boolean;
+  type: string;
 }
 
 const Container = styled.div`
@@ -131,18 +141,27 @@ const Coin = () => {
     }
   );
 
-  if (!priceData || priceData.length === 0) return <div>No data available</div>;
+  const { isLoading: isCoinInfoLoading, data: coinInfo } = useQuery<ICoinInfo>(
+    ["coinInfo", coinId],
+    () => coinInfoFetcher(coinId!),
+    {
+      enabled: !!coinId,
+    }
+  );
+
+  if (!priceData || priceData.length === 0)
+    return <div>Coin data is loading...</div>;
 
   return (
     <Container>
       <Helmet>
-        <title>{states?.name || "Loading...."}</title>
+        <title>{coinInfo?.name || states?.name || "Loading...."}</title>
       </Helmet>
       <Header>
         <Link to="/react_master">
           <GoBack>&lt;</GoBack>
         </Link>
-        <Title>{states?.name || "Loading...."}</Title>
+        <Title>{coinInfo?.name || states?.name || "Loading...."}</Title>
       </Header>
       {isPriceLoading ? (
         <LoadingText>Loading....</LoadingText>
@@ -179,7 +198,12 @@ const Coin = () => {
             </Link>
           </Navs>
 
-          <Outlet context={{ coinId: coinId }} />
+          <Outlet
+            context={{
+              coinId: coinId,
+              coinName: coinInfo?.name || states?.name,
+            }}
+          />
         </Main>
       )}
     </Container>

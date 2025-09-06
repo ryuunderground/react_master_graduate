@@ -25,6 +25,7 @@ const Header = styled.header`
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 30px;
 `;
 
 const CoinsList = styled.ul`
@@ -73,6 +74,7 @@ const Coins = () => {
   const { isLoading, data } = useQuery<ICoins[]>("allCoins", coinFetcher);
   const setTheme = useSetRecoilState(isDarkAtom);
   const toggleTheme = () => setTheme((prev) => !prev);
+  console.log(isLoading);
   return (
     <Container>
       <Helmet>

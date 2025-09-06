@@ -32,3 +32,8 @@ export const historyFetcher = async (coinId: string) => {
   );
   return historyRes.data;
 };
+
+export const coinInfoFetcher = async (coinId: string) => {
+  const coinRes = await axios(`https://api.coinpaprika.com/v1/coins/${coinId}`);
+  return coinRes.data;
+};

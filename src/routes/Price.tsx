@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useOutletContext } from "react-router-dom";
 import styled from "styled-components";
 import { useQuery } from "react-query";
 import { priceFetcher } from "../ts/api";
@@ -12,6 +12,11 @@ interface IPrices {
   time_close: number;
   time_open: number;
   volume: string;
+}
+
+interface ICoinData {
+  coinId: string;
+  coinName?: string;
 }
 
 const Main = styled.div`
@@ -50,6 +55,8 @@ const ContentPrice = styled.span`
 
 const Price = () => {
   const { coinId } = useParams();
+  const coinData = useOutletContext<ICoinData>();
+  const coinName = coinData.coinName;
   const { isLoading: isPriceLoading, data: priceData } = useQuery<IPrices[]>(
     coinId ?? "defaultCoinId",
     () => priceFetcher(coinId),
@@ -59,10 +66,11 @@ const Price = () => {
     }
   );
 
-  if (!priceData || priceData.length === 0) return <div>No data available</div>;
+  if (!priceData || priceData.length === 0)
+    return <div>Coin data is loading...</div>;
   return (
     <Main>
-      <h2>Previous Price</h2>
+      <h2>{coinName} Previous Price</h2>
       {priceData.slice(1, -1).map((info) => (
         <PriceList>
           <PriceContent>

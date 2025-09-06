@@ -7,6 +7,7 @@ import { isDarkAtom } from "../ts/atoms";
 
 interface ICoinData {
   coinId: string;
+  coinName?: string;
 }
 
 interface IHistoryData {
@@ -23,6 +24,7 @@ interface IHistoryData {
 const Chart = () => {
   const coinData = useOutletContext<ICoinData>();
   const coinId = coinData.coinId;
+  const coinName = coinData.coinName;
   const { isLoading, data } = useQuery<IHistoryData[]>(["ohlcv", coinId], () =>
     historyFetcher(coinId)
   );
@@ -36,6 +38,7 @@ const Chart = () => {
   const isDark = useRecoilValue(isDarkAtom);
   return (
     <div>
+      <h2>{coinName} Chart</h2>
       {isLoading ? (
         "Is Loading"
       ) : (
